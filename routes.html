@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Route Planner</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+  <style>
+    #map {
+      height: 500px;
+      width: 100%;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+    }
+    .card input {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0 10px;
+    }
+    .card button {
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Pampanga Transport</div>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="spots.html">Tourist Spots</a>
+    <a href="routes.html">Routes</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h2 class="section-title">Find a Route</h2>
+
+  <div class="card">
+    <label>Starting Point</label>
+    <input id="start" type="text" placeholder="Ex: Clark Airport">
+
+    <label>Destination</label>
+    <input id="end" type="text" placeholder="Ex: Mt. Pinatubo">
+
+    <button onclick="findRoute()">Find Fastest Route</button>
+
+    <p id="route-output" style="margin-top:20px;font-weight:bold;"></p>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+  </div>
+</div>
+
+<footer>
+  Pampanga Tourism Transport © 2025
+</footer>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+<script>
+  // Initialize the map
+  const map = L.map('map').setView([15.137, 120.560], 10); // Centered in Pampanga
+
+  // Add OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  let routingControl;
+
+  function findRoute() {
+    const start = document.getElementById("start").value;
+    const end = document.getElementById("end").value;
+
+    if (!start || !end) {
+      alert("Please enter both starting point and destination!");
+      return;
+    }
+
+    // Use Nominatim (OpenStreetMap) to get coordinates
+    const startURL = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(start)}`;
+    const endURL = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(end)}`;
+
+    Promise.all([fetch(startURL), fetch(endURL)])
+      .then(responses => Promise.all(responses.map(r => r.json())))
+      .then(results => {
+        if (results[0].length === 0 || results[1].length === 0) {
+          alert("Could not find one of the locations. Try a more specific name.");
+          return;
+        }
+
+        const startCoords = [results[0][0].lat, results[0][0].lon];
+        const endCoords = [results[1][0].lat, results[1][0].lon];
+
+        // Remove previous route
+        if (routingControl) map.removeControl(routingControl);
+
+        // Draw route
+        routingControl = L.Routing.control({
+          waypoints: [
+            L.latLng(startCoords[0], startCoords[1]),
+            L.latLng(endCoords[0], endCoords[1])
+          ],
+          routeWhileDragging: false,
+          showAlternatives: false,
+          lineOptions: { styles: [{ color: 'blue', weight: 5 }] },
+          addWaypoints: false
+        }).addTo(map);
+
+        document.getElementById("route-output").innerText = "Route displayed on the map.";
+      })
+      .catch(err => {
+        alert("Error finding route: " + err);
+      });
+  }
+</script>
+
+</body>
+</html>

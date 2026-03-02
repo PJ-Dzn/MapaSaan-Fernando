@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Map</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <!-- Routing CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
+
+  <!-- Geocoder CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Pampanga Transport</div>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="spots.html">Tourist Spots</a>
+    <a href="routes.html">Routes</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h2 class="section-title">Interactive Tourist Map</h2>
+  <p>Explore Pampanga’s must-visit locations and nearby services.</p>
+
+  <!-- Quick Destination Buttons -->
+  <div style="margin-bottom:15px;">
+    <strong>Quick Destinations:</strong><br><br>
+    <button onclick="routeToCoords(15.0345,120.6890)">Klafee</button>
+    <button onclick="routeToCoords(15.0360,120.6865)">Houseblend</button>
+    <button onclick="routeToCoords(15.0332,120.6825)">Hide and Sip</button>
+    <button onclick="routeToCoords(15.0355,120.6902)">Hash</button>
+    <button onclick="routeToCoords(15.0378,120.6840)">Lala Garden</button>
+  </div>
+
+  <div class="map-box">
+    <div id="map" style="width:100%; height:450px; border-radius:12px;"></div>
+  </div>
+</div>
+
+<footer>
+  Pampanga Tourism Transport © 2025
+</footer>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Routing JS -->
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+<!-- Geocoder JS -->
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script>
+
+// Focus map on Philippines
+var map = L.map('map').setView([12.8797, 121.7740], 6);
+
+var userLocation;
+var routingControl;
+
+// OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Get user location
+map.locate({ setView: true, maxZoom: 15 });
+
+map.on('locationfound', function(e) {
+    userLocation = e.latlng;
+
+    L.marker(userLocation)
+        .addTo(map)
+        .bindPopup("You are here")
+        .openPopup();
+});
+
+map.on('locationerror', function() {
+    alert("Please allow location access for navigation.");
+});
+
+// Function to create route
+function createRoute(destination) {
+
+    if (routingControl) {
+        map.removeControl(routingControl);
+    }
+
+    routingControl = L.Routing.control({
+        waypoints: [
+            userLocation,
+            destination
+        ],
+        routeWhileDragging: true,
+        show: true
+    }).addTo(map);
+}
+
+// Route using coordinates (100% reliable)
+function routeToCoords(lat, lng) {
+
+    if (!userLocation) {
+        alert("Waiting for your location...");
+        return;
+    }
+
+    var destination = L.latLng(lat, lng);
+
+    map.setView(destination, 15);
+    createRoute(destination);
+}
+
+// Search bar routing (nationwide)
+L.Control.geocoder({
+    defaultMarkGeocode: false,
+    position: "topright",
+    geocoder: L.Control.Geocoder.nominatim({
+        geocodingQueryParams: {
+            countrycodes: "ph"
+        }
+    })
+})
+.on('markgeocode', function(e) {
+
+    if (!userLocation) {
+        alert("Waiting for your location...");
+        return;
+    }
+
+    var destination = e.geocode.center;
+    map.setView(destination, 15);
+    createRoute(destination);
+
+})
+.addTo(map);
+
+</script>
+
+</body>
+</html>
