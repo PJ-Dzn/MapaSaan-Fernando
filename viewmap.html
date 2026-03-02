@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapaSaan Fernando</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="viewmap.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+    <!-- Routing CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
+
+    <!-- Geocoder CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+</head>
+
+<body>
+
+<header>
+    <h1>MapaSaan Fernando</h1>
+    <nav>
+        <a href="sf.html" class="nav-btn">Home</a>
+        <a href="aboutus.html" class="nav-btn">About Us</a>
+        <a href="FAQs.html" class="nav-btn">FAQs</a>
+    </nav>
+</header>
+
+<div class="banner">
+    View Map
+</div>
+
+<!-- MAP SECTION -->
+<div class="map-box">
+    <div id="map" style="width:100%; height:450px; border-radius:12px;"></div>
+</div>
+
+<!-- FILTER SECTION (Floating Card Style) -->
+<section class="filter-section">
+
+    <!-- Hidden radio buttons -->
+    <input type="radio" name="filter" id="all" checked>
+    <input type="radio" name="filter" id="cafe">
+    <input type="radio" name="filter" id="resto">
+    <input type="radio" name="filter" id="resort">
+
+    <!-- Filter Buttons -->
+    <div class="filters">
+        <label for="all">All</label>
+        <label for="cafe">Cafes</label>
+        <label for="resto">Resto</label>
+        <label for="resort">Resort</label>
+    </div>
+
+    <!-- Destination Buttons -->
+    <div class="places">
+        <button onclick="routeToCoords(15.0345,120.6890)" class="place cafe">Klaffee</button>
+        <button onclick="routeToCoords(15.05490751868274,120.66196470836894)" class="place cafe">Houseblend</button>
+        <button onclick="routeToCoords(15.0332,120.6825)" class="place cafe">Hide&Sip</button>
+        <button onclick="routeToCoords(15.0355,120.6902)" class="place cafe">Hash</button>
+        <button onclick="routeToCoords(15.0378,120.6840)" class="place cafe">Lala Garden</button>
+        <button onclick="routeToCoords(15.051498862041678, 120.66456036916809)" class="place cafe">Suelo</button>
+
+        <button onclick="routeToCoords(15.064913033258442,120.6554603483937)" class="place resto">Funnside Ningnangan</button>
+        <button onclick="routeToCoords(15.045572026197608,120.67239854395186)" class="place resto">Tita Siok Eatery</button>
+        <button onclick="routeToCoords(15.055453297535513,120.66083305767071)" class="place resto">Jun-Jun's</button>
+
+        <button onclick="routeToCoords(15.051804423356295,120.65887912883535)" class="place resort">Ramarville Resort</button>
+        <button onclick="routeToCoords(15.090285121469428,120.6245633061954)" class="place resort">Bale Pablo Private Resort</button>
+        <button onclick="routeToCoords(15.107585926466896,120.62606801724385)" class="place resort">Baliti Resort</button>
+    </div>
+
+</section>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script>
+// Focus map on Philippines
+var map = L.map('map').setView([12.8797, 121.7740], 6);
+
+var userLocation;
+var routingControl;
+
+// OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Get user location
+map.locate({ setView: true, maxZoom: 15 });
+
+map.on('locationfound', function(e) {
+    userLocation = e.latlng;
+
+    L.marker(userLocation)
+        .addTo(map)
+        .bindPopup("You are here")
+        .openPopup();
+});
+
+map.on('locationerror', function() {
+    alert("Please allow location access for navigation.");
+});
+
+// Create route
+function createRoute(destination) {
+
+    if (routingControl) {
+        map.removeControl(routingControl);
+    }
+
+    routingControl = L.Routing.control({
+        waypoints: [userLocation, destination],
+        routeWhileDragging: true,
+        show: true
+    }).addTo(map);
+}
+
+// Route to coordinates
+function routeToCoords(lat, lng) {
+
+    if (!userLocation) {
+        alert("Waiting for your location...");
+        return;
+    }
+
+    var destination = L.latLng(lat, lng);
+    map.setView(destination, 15);
+    createRoute(destination);
+}
+
+// Search bar routing
+L.Control.geocoder({
+    defaultMarkGeocode: false,
+    position: "topright",
+    geocoder: L.Control.Geocoder.nominatim({
+        geocodingQueryParams: {
+            countrycodes: "ph"
+        }
+    })
+})
+.on('markgeocode', function(e) {
+
+    if (!userLocation) {
+        alert("Waiting for your location...");
+        return;
+    }
+
+    var destination = e.geocode.center;
+    map.setView(destination, 15);
+    createRoute(destination);
+
+})
+.addTo(map);
+
+</script>
+
+<footer>
+    <p>© 2025 MapaSaan Fernando. All rights reserved.</p>
+    <p>Contact us: mapasaanfernando@gmail.com</p>
+</footer>
+
+</body>
+</html>

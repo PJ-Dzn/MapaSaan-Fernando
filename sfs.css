@@ -1,0 +1,8 @@
+
+body {
+  font-family: Poppins, Helvetica, sans-serif;
+   background-image: linear-gradient(#e0ddb1, #d4d7e4);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

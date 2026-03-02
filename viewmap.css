@@ -1,0 +1,245 @@
+/* =========================
+   RESET
+========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* =========================
+   BODY
+========================= */
+
+body {
+  background-image: linear-gradient(#e0ddb1, #d4d7e4);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* =========================
+   HEADER (UNCHANGED)
+========================= */
+
+header {
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+}
+
+header h1 {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+/* =========================
+   NAVIGATION (UNCHANGED)
+========================= */
+
+nav {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-btn {
+  background: #343c6b;
+  color: white;
+  padding: 10px 25px;
+  text-decoration: none;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 16px;
+  margin-left: 15px;
+  transition: 0.3s;
+}
+
+.nav-btn:hover {
+  background: #2b325a;
+}
+
+/* =========================
+   TOP BLUE BANNER
+========================= */
+
+.banner {
+  background-color: #3b3f78;
+  color: #e7e6cc;
+  padding: 25px 60px;
+  text-align: right;
+  font-size: 40px;
+  font-weight: 800;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.container h2 {
+  font-size: 56px;
+  color: #2f3566;
+  margin-bottom: 20px;
+  font-weight: 800;
+}
+
+/* =========================
+   FILTER SECTION
+========================= */
+
+.filter-section {
+  background: #f4f5f8;
+  padding: 35px 60px;
+}
+
+/* Hide radio buttons */
+input[type="radio"] {
+  display: none;
+}
+
+/* FILTER BUTTON ROW */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+/* TOP FILTER BUTTONS */
+.filters label {
+  padding: 12px 32px;
+  border-radius: 10px;
+  background: #e6e8f2;
+  color: #2f3566;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.filters label:hover {
+  background: #d9dcf0;
+}
+
+/* Active Filter */
+#all:checked ~ .filters label[for="all"],
+#cafe:checked ~ .filters label[for="cafe"],
+#resto:checked ~ .filters label[for="resto"],
+#resort:checked ~ .filters label[for="resort"] {
+  background: #343c6b;
+  color: #ffffff;
+  border: 1px solid #343c6b;
+}
+
+/* =========================
+   PLACE BUTTON GRID
+========================= */
+
+.places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.place {
+  padding: 10px 22px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #2f3566;
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid #dcdfea;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.place:hover {
+  background: #343c6b;
+  color: #ffffff;
+  border-color: #343c6b;
+  transform: translateY(-2px);
+}
+
+/* =========================
+   FILTER LOGIC
+========================= */
+
+/* Show all */
+#all:checked ~ .places .place {
+  display: inline-block;
+}
+
+/* Show only cafes */
+#cafe:checked ~ .places .place {
+  display: none;
+}
+#cafe:checked ~ .places .cafe {
+  display: inline-block;
+}
+
+/* Show only resto */
+#resto:checked ~ .places .place {
+  display: none;
+}
+#resto:checked ~ .places .resto {
+  display: inline-block;
+}
+
+/* Show only resort */
+#resort:checked ~ .places .place {
+  display: none;
+}
+#resort:checked ~ .places .resort {
+  display: inline-block;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+  background: #000;
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+  margin-top: auto;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .banner {
+    text-align: center;
+    font-size: 32px;
+  }
+
+  .container h2 {
+    font-size: 40px;
+  }
+
+  .filter-section {
+  margin: -40px auto 0 auto;   /* pulls it slightly upward */
+  width: 92%;                  /* makes it centered and not full width */
+  background: #ffffff;
+  padding: 35px 60px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+  position: relative;
+  z-index: 10;                 /* ensures it sits above the map */
+}
+  }
+
