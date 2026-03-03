@@ -167,4 +167,7 @@ footer {
   .three-grid {
     grid-template-columns: 1fr;
   }
+}button, input {
+  padding: 12px 20px;
+  font-size: 1rem;
 }
